@@ -57,9 +57,9 @@ class Person
 
 $person1 = new Person('Alfredo', 'Yepez');
 
-// En PHP no tenémos una manera de indicar si una propiedad pueda ser leida mas no
-// modificarla, de manera que para poder leer una propiedad como protegida o privada
-// fuera del alcance de una clase podemos a travéz de un metodo.
+// En PHP no tenémos una manera de indicar si una propiedad puede ser leida pero que no
+// permita modificarla, de manera que para poder leer una propiedad como protegida o privada
+// fuera del alcance de una clase podemos a traves de un metodo.
 
 // echo $person1->firstName; // not work
 echo $person1->firstName() . '<br>'; // it's works
@@ -72,8 +72,8 @@ echo $person1->firstName() . '<br>'; // it's works
 
 // El propósito es permitir que el programador pueda acceder a las propiedades
 // de la clase pero no modificarla o cambiarla, por lo tanto brindamos metodos
-// para lectura y no brindramos metodos al programador para modificar. De
-// esta manera se intenta protejer al programador de que cometa un error.
+// para lectura pero no brindramos metodos para modificar. De
+// esta manera se intenta proteger al programador de que cometa un error.
 
 // get nickname
 $person1->setNickname('kassadin');
