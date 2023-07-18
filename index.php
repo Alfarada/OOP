@@ -1,26 +1,57 @@
 <?php
 
 declare(strict_types=1);
-ini_set('display_errors',1);
+ini_set('display_errors', 1);
+
 class Person
 {
     public function __construct(
-        protected $firstName,
-        protected $lastName
+        protected string  $firstName,
+        protected string  $lastName,
+        protected ?string $nickname = 'noname',
+        protected string  $birthdate = '20/12/1995'
     )
     {
     }
 
-    public function fullName(): string {
+    public function fullName(): string
+    {
         return $this->firstName . ' ' . $this->lastName;
     }
 
-    public function firstName(): string {
+    public function firstName(): string
+    {
         return $this->firstName;
     }
 
-    public function setFirstName(string $name): string {
+    public function setFirstName(string $name): string
+    {
         return $this->firstName = $name;
+    }
+
+    public function getNickname(): string
+    {
+        return $this->nickname;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function setNickname(string $nickname): string
+    {
+        if (strlen($nickname) >= 4) {
+            return $this->nickname = $nickname;
+        }
+        throw new Exception('The nickname must have at least 2 characters!');
+    }
+
+    public function age(): int
+    {
+        date_default_timezone_set('UTC');
+        $currentDate = new DateTime();
+        $birthdate = DateTime::createFromFormat('d/m/Y', $this->birthdate);
+        $age = $birthdate->diff($currentDate);
+        return $age->y;
     }
 }
 
@@ -43,3 +74,10 @@ echo $person1->firstName() . '<br>'; // it's works
 // de la clase pero no modificarla o cambiarla, por lo tanto brindamos metodos
 // para lectura y no brindramos metodos al programador para modificar. De
 // esta manera se intenta protejer al programador de que cometa un error.
+
+// get nickname
+$person1->setNickname('kassadin');
+echo $person1->getNickname() . '<br>';
+
+// get birthdate
+echo $person1->age() . '<br>';
