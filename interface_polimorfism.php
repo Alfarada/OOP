@@ -18,27 +18,30 @@ abstract class Unit {
     )
     { }
 
+    public function setArmor(Armor $armor): void{
+        $this->armor = $armor;
+    }
+
     public abstract function attack(Unit $opponent): void;
 
-    public function takeDamage(int|float $damage)
+    public function takeDamage(int|float $damage): void
     {
-        $this->setHp($this->hp - $damage);
+        $this->hp = $this->hp - $this->armor->absorbDamage($damage);
 
         if ($this->hp <= self::MINIMUN_HP) { $this->die(); }
+
+        show("{$this->name} ahora tiene {$this->hp} puntos de vida");
+
+    }
+
+    protected function absorbDamage(int|float $damage): int|float
+    {
+        return $damage;
     }
 
     public function getName(): string
     {
         return $this->name;
-    }
-
-    private function setHp(int|float $hp): void
-    {
-        $this->hp = $hp;
-        // terminate script execution if life has reached zero
-        if ($this->hp <= self::MINIMUN_HP) { exit($this->die()); }
-
-        show("{$this->name} ahora tiene {$this->hp} puntos de vida");
     }
 
     public function getHp(): int
@@ -49,6 +52,7 @@ abstract class Unit {
     public function die(): void
     {
         show("{$this->name} ha muerto");
+        exit();
     }
 
 }
@@ -70,12 +74,11 @@ class Soldier extends Unit {
         $opponent->takeDamage($this->damage);
     }
 
-    public function takeDamage(int|float $damage): void
-    {
+    public function absorbDamage(int|float $damage): int|float {
         if ($this->armor) {
             $damage = $this->armor->absorbDamage($damage);
         }
-        parent::takeDamage($damage / 2);
+        return $damage;
     }
 }
 
@@ -83,44 +86,39 @@ class Archer extends Unit {
 
     protected int $damage = 15;
     protected ?Armor $armor;
-    public function __construct(
-        string $name
-    )
+    public function __construct( string $name)
     {
         parent::__construct($name);
     }
-
-    public function setArmor($armor): void {
-        $this->armor = $armor;
-    }
-
     public function attack(Unit $opponent): void
     {
         show("{$this->name} lanza una flecha a {$opponent->getName()}");
 
         $opponent->takeDamage($this->damage);
     }
-
-    public function takeDamage(int|float $damage): void
-    {
-        if ($this->armor) {
-            $damage = $this->armor->absorbDamage($damage);
-        }
-
-        parent::takeDamage($damage / 4);
-    }
 }
 
-class Armor {
+interface Armor {
+    public function absorbDamage($damage);
+}
+
+class BronzeArmor implements Armor {
     public function absorbDamage($damage): int|float {
         return $damage / 2;
     }
 }
 
+class BrittleArmor implements Armor {
+    public function absorbDamage($damage): int|float {
+        return $damage  * 2;
+    }
+}
+
 $bob = new Soldier('Bob');
-$tedd = new Archer('Tedd',  new Armor());
+$tedd = new Archer('Tedd');
+$tedd->setArmor(new BrittleArmor());
 
 $bob->attack($tedd);
-//$bob->attack($tedd);
+$bob->attack($tedd);
 
 
